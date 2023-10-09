@@ -8,11 +8,15 @@ export type ExtensionToWebviewMessage =
   | {
       type: "PUSH";
       sourceLocation: SourceLocation;
-      preview: string;
+      note: string;
     }
-  | { type: "POP" };
+  | { type: "POP" }
+  | { type: "SYNC"; data: any };
 
-export type WebviewToExtensionMessage = {
-  type: "JUMP";
-  sourceLocation: SourceLocation;
-};
+export type WebviewToExtensionMessage =
+  | { type: "INIT" }
+  | {
+      type: "JUMP";
+      sourceLocation: SourceLocation;
+    }
+  | { type: "SYNC"; data: any };

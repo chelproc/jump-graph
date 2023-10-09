@@ -1,5 +1,7 @@
 import { Handle, Position } from "reactflow";
 import type { NodeProps } from "./types";
+import { useEditorContext } from "./context";
+import { useEffect, useRef } from "react";
 
 const targetHandleCommonStyle = {
   position: "absolute",
@@ -19,7 +21,15 @@ export const nodeRendererHandleIds = {
   left: "left",
 } as const;
 
-export default ({ data }: NodeProps) => {
+export default ({ id, data }: NodeProps) => {
+  const { updateNodeNote } = useEditorContext();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef.current && data.note !== inputRef.current.value)
+      inputRef.current.value = data.note;
+  }, [data.note]);
+
   return (
     <div
       style={{
@@ -35,21 +45,47 @@ export default ({ data }: NodeProps) => {
       </div>
       <div
         style={{
+          display: "flex",
+          flexDirection: "row-reverse",
           overflow: "hidden",
-          textOverflow: "ellipsis",
-          direction: "rtl",
-          whiteSpace: "nowrap",
-          fontSize: "0.9em",
-          color: "#666",
         }}
       >
-        {data.sourceLocation.uri.split("/").slice(0, -1).join("/")}
+        <div
+          title={data.sourceLocation.uri}
+          style={{
+            flexGrow: 1,
+            whiteSpace: "nowrap",
+            fontSize: "0.9em",
+            color: "#666",
+          }}
+        >
+          {data.sourceLocation.uri.split("/").slice(0, -1).join("/")}
+        </div>
       </div>
-      <div
-        style={{ marginTop: "4px", whiteSpace: "nowrap", overflow: "hidden" }}
-      >
-        {data.preview}
-      </div>
+      {/* The state change on the parent is not immediately reflected in the child node, so this input is intentionally set uncontrolled. */}
+      <input
+        ref={inputRef}
+        className="nodrag"
+        title={data.note}
+        style={{
+          width: "100%",
+          padding: "4px 0",
+          border: "none",
+          outline: "none",
+          background: "initial",
+          textAlign: "center",
+          font: "inherit",
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+        }}
+        onChange={(e) => {
+          updateNodeNote(id, e.target.value);
+        }}
+      />
       <Handle
         type="source"
         id={nodeRendererHandleIds.top}

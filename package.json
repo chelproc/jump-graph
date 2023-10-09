@@ -2,7 +2,7 @@
   "name": "jump-graph",
   "displayName": "Jump Graph",
   "description": "Explore large-scale codebases with ease",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "preview": true,
   "repository": {
     "type": "git",
@@ -16,17 +16,41 @@
   "contributes": {
     "commands": [
       {
-        "command": "jump-graph.open",
-        "title": "Jump Graph: Open..."
+        "command": "jump-graph.new",
+        "title": "Jump Graph: New Untitled Graph..."
       },
       {
         "command": "jump-graph.push",
-        "title": "Jump Graph: Push the current source position to the graph",
+        "title": "Jump Graph: Push Current Source Position to Graph",
         "when": "editorTextFocus"
       },
       {
         "command": "jump-graph.pop",
-        "title": "Jump Graph: Pop the current node and jump to the last node"
+        "title": "Jump Graph: Pop Current Node and Jump to Last Node"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "jump-graph.editor",
+        "displayName": "Jump Graph",
+        "selector": [
+          {
+            "filenamePattern": "*.jump-graph"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "languages": [
+      {
+        "id": "jump-graph",
+        "extensions": [
+          ".jump-graph"
+        ],
+        "aliases": [
+          "Jump Graph",
+          "jg"
+        ]
       }
     ]
   },
@@ -36,13 +60,20 @@
     "watch": "concurrently npm:watch:web npm:watch:extension",
     "build:web": "esbuild ./web/main.tsx --target=es2022 --bundle --jsx=automatic --outfile=./dist/web.js",
     "watch:web": "npm run build:web -- --watch --sourcemap=inline",
-    "build:extension": "esbuild ./extension/main.ts --format=cjs --target=es2022 --bundle --external:vscode --loader:.js=text --loader:.css=text --outfile=./dist/extension.js",
+    "build:extension": "esbuild ./extension/index.ts --format=cjs --target=es2022 --bundle --external:vscode --loader:.js=text --loader:.css=text --outfile=./dist/extension.js",
     "watch:extension": "npm run build:extension -- --watch --sourcemap=inline",
     "package": "vsce package -o ./dist/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-use": "^17.4.0",
+    "reactflow": "^11.9.2",
+    "uuid": "^9.0.1"
+  },
   "devDependencies": {
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.11",
@@ -50,14 +81,9 @@
     "@types/vscode": "^1.80.0",
     "@types/vscode-webview": "^1.57.2",
     "@vscode/test-web": "^0.0.46",
+    "@vscode/vsce": "^2.21.1",
     "concurrently": "^8.2.1",
     "esbuild": "^0.19.4",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "reactflow": "^11.9.2",
-    "uuid": "^9.0.1"
   }
 }
